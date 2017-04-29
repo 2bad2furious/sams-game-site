@@ -1,0 +1,15 @@
+<header>
+    <div id="top_container">
+        <span id="loggedInfo">
+            <?php if ($this->logged): ?>
+                !{usernameText}:<a href="/!{profileUrl}">!{username}</a>
+            <?php else: ?>!{username}<?php endif; ?>
+        </span>
+        <span id="loginRegisterLogout">
+            <a href="/!{loginUrl}">!{loginText}</a>&nbsp;<a href="/!{registerUrl}">!{registerText}</a>
+        </span>
+    </div>
+    <nav>
+
+    </nav>
+</header>
