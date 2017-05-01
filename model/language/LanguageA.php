@@ -30,6 +30,7 @@ abstract class LanguageA implements LanguageI {
     protected $loginSuccess = "";
     protected $adminFailure = "";
     protected $loginFailure = "";
+    protected $formNoData = "";
 
 //Getters
     public function getCode(): string {
@@ -174,6 +175,13 @@ abstract class LanguageA implements LanguageI {
      */
     public function getLoginFailure(): string {
         return $this->loginFailure;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFormNoData(): string {
+        return $this->formNoData;
     }
 
     /**

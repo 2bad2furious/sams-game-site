@@ -54,5 +54,7 @@ interface LanguageI {
 
     public function getLoginFailure(): string;
 
+    public function getFormNoData():string;
+
     public static function instance(): LanguageI;
 }

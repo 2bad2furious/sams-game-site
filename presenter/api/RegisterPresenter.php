@@ -52,6 +52,7 @@ class RegisterPresenter extends ApiPresenter {
             }
         } else {
             $this->status = HeaderTypes::BAD_REQUEST;
+            $this->view->setData($this->getJsonMessage($this->lang->getFormNoData()));
         }
     }
 }

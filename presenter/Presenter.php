@@ -40,9 +40,9 @@ abstract class Presenter {
             if ($lang == null) throw new Exception("language not set");
         } else {
             $lang = $appLanguage;
-        }
 
-        array_shift($url);
+            array_shift($url);
+        }
 
         $app = AppSettings::DEFAULT_APP;
 

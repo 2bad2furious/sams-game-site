@@ -20,7 +20,6 @@ class LoginForm extends Form {
      * @return void
      */
     protected function main(LanguageI $lang, array $data = array()): void {
-        var_dump($data);
         $this->username = new InputFormNode("username", "text", $lang->getUsername(), true, (string)@$data["username"]);
         $this->password = new InputFormNode("password", "password", $lang->getPassword(), true, (string)@$data["password"]);
         $this->addFormNode($this->username);
