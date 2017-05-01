@@ -15,9 +15,9 @@ final class User {
     private $ip;
 
     public static function getUserByLogin(string $username, string $password, string $ip): ?User {
-        $data = Db::instance()->single("SELECT * FROM user WHERE username LIKE ? AND password LIKE ?", array($username, $password));
+        $data = Db::instance()->single("SELECT * FROM user WHERE username LIKE ?", array($username));
         if ($data)
-            return new User($data["username"], $data["password"], $data["email"], $ip);
+            return password_verify($password, $data["password"]) ? new User($data["username"], $data["password"], $data["email"], $ip) : null;
         return null;
     }
 
@@ -27,13 +27,10 @@ final class User {
         $emailRegex = !boolval(preg_match(AppSettings::EMAIL_SYNTAX, $email));
         $usernameRegex = boolval(preg_match(AppSettings::USERNAME_SYNTAX, $username));
         $passwordAllowedRegex = boolval(preg_match(preg_quote(AppSettings::PASSWORD_ALLOWED_SYNTAX), $password));
-        var_dump(preg_match(AppSettings::PASSWORD_MUST_SYNTAX, $password));
         $passwordMustRegex = !boolval(preg_match(AppSettings::PASSWORD_MUST_SYNTAX, $password));
         if ($usernameExists || $usernameRegex || $emailExists || $emailRegex || $passwordAllowedRegex || $passwordMustRegex) return new RegisterFailure($usernameExists, $usernameRegex, $emailExists, $emailRegex, $passwordAllowedRegex, $passwordMustRegex);
 
         $hashedPassword = self::hash($password);
-
-        var_dump($hashedPassword,"$2y$10\$aWSYw0sJCxeLmfY5EG18puupKYB90J9QQzA2qetwY8fu.kGB2r6my",hash_equals($hashedPassword,"$2y$10\$aWSYw0sJCxeLmfY5EG18puupKYB90J9QQzA2qetwY8fu.kGB2r6my"));
 
         $creation = Db::instance()->add("user", array("username" => $username, "password" => $hashedPassword, "email" => $email));
 
@@ -69,7 +66,7 @@ final class User {
     private function arePasswordsSame(): bool {
         $data = $this->getInfo();
         if (!$data) return false;
-        return hash_equals($this->hash($this->password), $data["password"]);
+        return $this->password == $data["password"];
     }
 
     private function getInfo(): array {

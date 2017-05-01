@@ -99,9 +99,11 @@ abstract class Presenter {
     private final function __construct(array $post, array $get, array $files, StringArray $server, array $session, array $parameters, LanguageI $lang) {
 
         if (isset($session["user"])) {
-            if (!$session["user"] instanceof User) $this->logout();
-            else if (User::isUserOK($session["user"], $server->get("REMOTE_ADDR"), AppSettings::USER_LOGOUT_TIME)) $this->user = $session["user"];
-            else {
+            if (!$session["user"] instanceof User) {
+                $this->logout();
+            } else if (User::isUserOK($session["user"], $server->get("REMOTE_ADDR"), AppSettings::USER_LOGOUT_TIME)) {
+                $this->user = $session["user"];
+            } else {
                 $this->loginTimeOut();
             }
         }

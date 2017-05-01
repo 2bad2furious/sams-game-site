@@ -46,6 +46,7 @@ abstract class Form {
         $this->action = $action;
         $this->title = $title;
         $this->submitButton = $submitButton;
+        $this->data = $data;
 
         $this->checkAttributes();
 
@@ -71,26 +72,24 @@ abstract class Form {
 
         foreach ($this->fields as $v) {
             if (!$v instanceof FormNode) throw new \Exception("invalid form array");
-
             if (!$v->isRequired())
                 continue;
 
             $purename = $v->getName();
 
             if (!isset($this->data[$v->getName()])) {
+                echo "xd".$v->getName()."\n";
                 /* array inputs like fileuploads and stuff*/
                 $split = mb_substr($v->getName(), -2, 2);
                 if ($split === "[]") {
                     $purename = substr($v->getName(), 0, strlen($split));
                     if (!isset($this->data[$purename]))
                         return false;
-                }
-
-                if ($v instanceof UploadNode) {
+                }else if ($v instanceof UploadNode) {
                     if (!isset($this->files[$purename]))
                         return false;
                     continue;
-                }
+                }else return false;
             }
         }
 

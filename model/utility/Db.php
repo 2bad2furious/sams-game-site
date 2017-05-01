@@ -76,8 +76,6 @@ class Db extends PDO {
      * Returns the executed statement
      */
     public function createObject(string $query, array $parameters = array()): PDOStatement {
-        echo "<br>";
-        var_dump($query,$parameters);
         $PDOquery = $this->prepare($query);
         $PDOquery->execute($parameters);
         return $PDOquery;

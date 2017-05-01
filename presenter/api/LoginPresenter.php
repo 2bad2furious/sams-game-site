@@ -5,6 +5,7 @@ namespace presenter\api;
 
 
 use model\form\customforms\LoginForm;
+use model\Header;
 use model\settings\HeaderTypes;
 use model\user\User;
 use presenter\ApiPresenter;
@@ -23,20 +24,21 @@ class LoginPresenter extends ApiPresenter {
             return;
         }
 
-        $form = new LoginForm($this->lang, "", "", array("username" => "text", "password" => "xd"), $this->files);
+        $form = new LoginForm($this->lang, "", "", $this->post, $this->files);
 
-        $data = $form->hasData("POST");
-
-        if (!$data) {
+        if ($form->hasData($this->server->get("REQUEST_METHOD"))) {
+            $user = User::getUserByLogin($form->getUsername()->getValue(), $form->getPassword()->getValue(), $this->server->get("REMOTE_ADDR"));
+            if ($user instanceof User) {
+                //$_SESSION["user"] = $user;
+                $this->status = HeaderTypes::OK;
+                $this->view->setData($this->getJsonMessage($this->lang->getLoginSuccess()));
+            } else {
+                $this->status = HeaderTypes::BAD_REQUEST;
+                $this->view->setData($this->getJsonMessage($this->lang->getLoginFailure()));
+            }
+        } else {
             $this->status = HeaderTypes::BAD_REQUEST;
-            return;
         }
 
-        $user = User::getUserByLogin($form->getUsername()->getValue(), $form->getPassword()->getValue(), $this->server->get("REMOTE_ADDR"));
-
-        var_dump($form->getPassword()->getValue());
-        var_dump($form->getUsername()->getValue());
-
-        var_dump($user);
     }
 }

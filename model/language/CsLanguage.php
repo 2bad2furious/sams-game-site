@@ -26,10 +26,11 @@ final class CsLanguage extends LanguageA {
         $this->passwordAllowedRegex = "Heslo smí obsahovat pouze malá, velká písmena, číslice a znaky \$ _- & @ ß /";
         $this->passwordMustRegex = "Heslo musí obsahovat minimálně dvě velká písmena, dvě malá písmena a dvě číslice";
         $this->usernameRegex = "Uživatelské jméno smí obsahovat pouze písmena, číslice a _";
-         $this->usernameExists = "Uživatel s tímto jménem již existuje";
-         $this->loginSuccess = "Uživatel úspěšně přihlášen";
-         $this->registerSuccess = "Uživatel úspěšně zaregistrován";
-         $this->adminFailure = "Někde nastala chyba. Můžete nás kontaktovat, případně to zkusit později";
+        $this->usernameExists = "Uživatel s tímto jménem již existuje";
+        $this->loginSuccess = "Uživatel úspěšně přihlášen";
+        $this->registerSuccess = "Uživatel úspěšně zaregistrován";
+        $this->adminFailure = "Někde nastala chyba. Můžete nás kontaktovat, případně to zkusit později";
+        $this->loginFailure = "Špatné uživatelské jméno nebo heslo";
     }
 
 

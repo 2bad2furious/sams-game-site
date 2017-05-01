@@ -42,5 +42,6 @@ class EnLanguage extends LanguageA {
         $this->loginSuccess = "User successfully logged in";
         $this->registerSuccess = "User successfully registered";
         $this->adminFailure = "An error occured. You can contact us or try again later";
+        $this->loginFailure = "Wrong username or password";
     }
 }

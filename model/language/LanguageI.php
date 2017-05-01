@@ -50,7 +50,9 @@ interface LanguageI {
 
     public function getAdminFailure(): string;
 
-    public function getRegisterSucces(): string;
+    public function getRegisterSuccess(): string;
+
+    public function getLoginFailure(): string;
 
     public static function instance(): LanguageI;
 }

@@ -29,6 +29,7 @@ abstract class LanguageA implements LanguageI {
     protected $registerSuccess = "";
     protected $loginSuccess = "";
     protected $adminFailure = "";
+    protected $loginFailure = "";
 
 //Getters
     public function getCode(): string {
@@ -168,6 +169,12 @@ abstract class LanguageA implements LanguageI {
         return $this->registerSuccess;
     }
 
+    /**
+     * @return string
+     */
+    public function getLoginFailure(): string {
+        return $this->loginFailure;
+    }
 
     /**
      * TODO set everything
