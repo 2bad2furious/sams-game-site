@@ -24,7 +24,7 @@ class AppLanguage {
     public static function getInitLanguage(string $http_accept_language, string $default = ""):?LanguageI {
         $langcode = substr($http_accept_language, 0, 2);
 
-        $lang = self::isLanguage($langcode);
+        if ($langcode) $lang = self::isLanguage($langcode);
 
         if ($lang == null) return self::isLanguage($default);
 

@@ -23,7 +23,7 @@ class EnLanguage extends LanguageA {
         $this->login = "Log In";
         $this->username = "Username";
         $this->logout = "Log Out";
-        $this->langcode = "en";
+        $this->code = "en";
         $this->userNotLogged = "User not logged in";
         $this->pageDoesNotExist = "Page does not exist";
         $this->password = "heslo";
@@ -31,5 +31,16 @@ class EnLanguage extends LanguageA {
         $this->passwordSecondFormText = "Insert your password again";
         $this->usernameFormText = "Insert your username";
         $this->emailFormText = "Insert your email";
+        $this->passwordsDontMatch = "Passwords don't match";
+        $this->userAlreadyLoggedIn = "You are already logged in";
+        $this->emailExists = "This email is already registered";
+        $this->emailRegex = "Email must contain @";
+        $this->passwordAllowedRegex = "Password can only contain uppercase letters, lowercase letters, numbers and \$ _- & @ ß /";
+        $this->passwordMustRegex = "Password must contain two uppercase letters, two lowercase letters and two numbers";
+        $this->usernameRegex = "Username can only contain letters, numbers and  _";
+        $this->usernameExists = "This username is already registered";
+        $this->loginSuccess = "User successfully logged in";
+        $this->registerSuccess = "User successfully registered";
+        $this->adminFailure = "An error occured. You can contact us or try again later";
     }
 }

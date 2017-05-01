@@ -3,11 +3,13 @@
 namespace presenter;
 
 use Exception;
+use model\Header;
 use model\language\AppLanguage;
 use model\language\LanguageI;
 use model\settings\App;
 use model\settings\AppSettings;
 use model\settings\HeaderTypes;
+use model\StringArray;
 use model\user\User;
 use model\utility\StringUtility;
 use model\utility\UrlUtility;
@@ -23,16 +25,18 @@ abstract class Presenter {
      * @throws Exception
      */
     public static function route(array $post, array $get, array $files, array $server, array $session): Presenter {
-        $url = explode("/", $server["REQUEST_URI"]);
+        $serverArr = new StringArray($server);
+
+        $url = explode("/", $serverArr->get("REQUEST_URI"));
         array_shift($url);
 
         if (!isset($url[0]) || !$url[0]) {
-            UrlUtility::instance()->redirect(AppLanguage::getInitLanguage($server["HTTP_ACCEPT_LANGUAGE"], AppSettings::DEFAULT_LANGUAGE)->getCode());
+            UrlUtility::instance()->redirect(AppLanguage::getInitLanguage($serverArr->get("HTTP_ACCEPT_LANGUAGE"), AppSettings::DEFAULT_LANGUAGE)->getCode());
         }
 
         $appLanguage = AppLanguage::isLanguage($url[0]);
         if ($appLanguage == null || !$appLanguage instanceof LanguageI) {
-            $lang = AppLanguage::getInitLanguage($server["HTTP_ACCEPT_LANGUAGE"], AppSettings::DEFAULT_LANGUAGE);
+            $lang = AppLanguage::getInitLanguage($serverArr->get("HTTP_ACCEPT_LANGUAGE"), AppSettings::DEFAULT_LANGUAGE);
             if ($lang == null) throw new Exception("language not set");
         } else {
             $lang = $appLanguage;
@@ -61,7 +65,7 @@ abstract class Presenter {
                     array_shift($url);
                 }
             }
-        return new $presenter($post, $get, $files, $server, $session, $url, $lang);
+        return new $presenter($post, $get, $files, $serverArr, $session, $url, $lang);
     }
 
     private static function presenterExists(string $path): bool {
@@ -77,8 +81,8 @@ abstract class Presenter {
     protected $parameters = array();
     protected $session = array();
     protected $user = null;
-    protected $request_method;
-    protected $request_uri;
+    protected $contentType = HeaderTypes::CONTENT_HTML;
+    protected $status = HeaderTypes::OK;
 
     /**
      * Presenter constructor.
@@ -92,35 +96,36 @@ abstract class Presenter {
      * @throws Exception
      * @internal param App|string $app
      */
-    private final function __construct(array $post, array $get, array $files, array $server, array $session, array $parameters, LanguageI $lang) {
-        $this->request_uri = $server["REQUEST_URI"];
+    private final function __construct(array $post, array $get, array $files, StringArray $server, array $session, array $parameters, LanguageI $lang) {
 
         if (isset($session["user"])) {
-            if (User::isUserOK($session["user"])) $this->user = $session["user"];
-            else $this->logOut();
+            if (!$session["user"] instanceof User) $this->logout();
+            else if (User::isUserOK($session["user"], $server->get("REMOTE_ADDR"), AppSettings::USER_LOGOUT_TIME)) $this->user = $session["user"];
+            else {
+                $this->loginTimeOut();
+            }
         }
 
         $this->post = $post;
         $this->get = $get;
         $this->server = $server;
         $this->session = $session;
-        $this->files = $server;
+        $this->files = $files;
         $this->parameters = $parameters;
         $this->lang = $lang;
-
-        $this->request_method = $server["REQUEST_METHOD"];
 
         $this->main();
     }
 
     public function output(): string {
-        if (!$this->view || !$this->view instanceof ViewI) throw new Exception("view not set");
         $this->headers();
+        if (!$this->view || !$this->view instanceof ViewI) throw new Exception("view not set");
         return $this->view->output();
     }
 
     protected function headers(): void {
-        if (!$this->headers) header(HeaderTypes::OK);
+        $this->addHeader($this->contentType);
+        $this->addHeader($this->status);
 
         foreach ($this->headers as $v) {
             header($v);
@@ -131,12 +136,16 @@ abstract class Presenter {
         $this->headers[] = $string;
     }
 
-    protected final function logout() {
-        unset($_SESSION["user"]);
-        $this->redirect($this->server["REQUEST_URI"]);
+    protected final function loginTimeOut() {
+        $this->status = HeaderTypes::LOGIN_TIMEOUT;
+        $this->logout();
     }
 
-    protected final function redirect(string $url){
+    protected final function logout() {
+        unset($_SESSION["user"]);
+    }
+
+    protected final function redirect(string $url) {
         UrlUtility::instance()->redirect($url);
         exit();
     }

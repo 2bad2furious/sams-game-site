@@ -3,3 +3,5 @@ RewriteEngine On
 Options -Indexes
 
 RewriteRule ^(.*)$ index.php [L,QSA]
+
+#ErrorDocument 403 /dir/file.html

@@ -30,5 +30,27 @@ interface LanguageI {
 
     public function getEmailFormText(): string;
 
+    public function getPasswordsDontMatch(): string;
+
+    public function getUserAlreadyLoggedIn(): string;
+
+    public function getEmailExists(): string;
+
+    public function getEmailRegex(): string;
+
+    public function getPasswordAllowedRegex(): string;
+
+    public function getPasswordMustRegex(): string;
+
+    public function getUsernameRegex(): string;
+
+    public function getUsernameExists(): string;
+
+    public function getLoginSuccess(): string;
+
+    public function getAdminFailure(): string;
+
+    public function getRegisterSucces(): string;
+
     public static function instance(): LanguageI;
 }

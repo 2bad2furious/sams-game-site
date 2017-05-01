@@ -13,4 +13,9 @@ class HeaderTypes {
     const PAYMENT_REQUIRED = "HTTP/1.0 402 Payment Required";
     const FORBIDDEN = "HTTP/1.0 403 Forbidden";
     const NOT_FOUND = "HTTP/1.0 404 Not Found";
+
+    const LOGIN_TIMEOUT = "HTTP/1.0 440 Login Time-out";
+
+    const CONTENT_HTML = "text/html";
+    const CONTENT_JSON = "application/json";
 }

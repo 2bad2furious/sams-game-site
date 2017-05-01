@@ -24,21 +24,22 @@ abstract class Form {
     protected $action;
     protected $title;
     protected $submitButton;
+    protected $data = array();
+    protected $files = array();
 
     /**
      * Form constructor.
      * @param LanguageI $lang
-     * @param array $data
      * @param string $title
      * @param string $submitButton
+     * @param array $data
+     * @param array $files
      * @param string $method
      * @param string $enctype
      * @param string $class
      * @param string $action
-     * @internal param array $fields
-     * @internal param $name
      */
-    public function __construct(LanguageI $lang, array $data = array(), string $title, string $submitButton, $method = "post", $enctype = "multipart/form-data", $class = "simpleForm", $action = "") {
+    public function __construct(LanguageI $lang, string $title, string $submitButton, array $data = array(),array $files = array(), $method = Form::METHOD_POST, $enctype = Form::ENCTYPE_MULTIPART, $class = "simpleForm", $action = "") {
         $this->method = $method;
         $this->enctype = $enctype;
         $this->class = $class;
@@ -53,23 +54,20 @@ abstract class Form {
 
 
     /**
-     * @param array $post
-     * @param array $get
      * @param array $files
      * @param string $server_request_method
-     * @return bool
+     * @return array|bool
      */
-    public function hasData(array $post, array $get, array $files, string $server_request_method): bool {
+    public function hasData(string $server_request_method): bool {
 
-        if ($server_request_method != ucwords($this->method)) return false;
+//        var_dump($server_request_method,strtoupper($this->method));
 
-        return $this->validate($post, $get, $files);
+        if ($server_request_method != strtoupper($this->method)) return false;
+
+        return $this->validate();
     }
 
-    protected function validate(array $post, array $get, array $files): bool {
-        $data = array();
-        if ($this->method == "post") $data = $post;
-        else if ($this->method == "get") $data = $get;
+    protected function validate(): bool {
 
         foreach ($this->fields as $v) {
             if (!$v instanceof FormNode) throw new \Exception("invalid form array");
@@ -77,23 +75,26 @@ abstract class Form {
             if (!$v->isRequired())
                 continue;
 
-            if (!isset($data[$v->getName()])) {
+            $purename = $v->getName();
+
+            if (!isset($this->data[$v->getName()])) {
                 /* array inputs like fileuploads and stuff*/
                 $split = mb_substr($v->getName(), -2, 2);
                 if ($split === "[]") {
-                    if (isset($data[substr($v->getName(), 0, strlen($split))]))
-                        continue;
-                    else
+                    $purename = substr($v->getName(), 0, strlen($split));
+                    if (!isset($this->data[$purename]))
                         return false;
                 }
 
                 if ($v instanceof UploadNode) {
-                    if (!isset($files[$v->getName()]))
+                    if (!isset($this->files[$purename]))
                         return false;
                     continue;
                 }
             }
         }
+
+        return true;
     }
 
     protected function addFormNode(FormNode $formNode) {
@@ -103,7 +104,7 @@ abstract class Form {
     /**
      * @throws \Exception
      */
-    protected function checkAttributes(): void {
+    protected final function checkAttributes(): void {
         if (!in_array($this->method, Form::METHOD_ARRAY)) throw new \Exception("Invalid form method");
 
         if (!in_array($this->enctype, Form::ENCTYPE_ARRAY)) throw new \Exception("Invalid form enctype");
@@ -118,7 +119,6 @@ abstract class Form {
         return $html . "<input type='submit' value='{$this->submitButton}'></form>";
     }
 
-
     /**
      * add fields and stuff
      * @param LanguageI $lang
@@ -126,4 +126,53 @@ abstract class Form {
      * @return void
      */
     abstract protected function main(LanguageI $lang, array $data = array()): void;
+
+    /**
+     * @return array
+     */
+    public function getFields(): array {
+        return $this->fields;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMethod(): string {
+        return $this->method;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEnctype(): string {
+        return $this->enctype;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClass(): string {
+        return $this->class;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAction(): string {
+        return $this->action;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTitle(): string {
+        return $this->title;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSubmitButton(): string {
+        return $this->submitButton;
+    }
 }

@@ -4,40 +4,62 @@
 namespace model\user;
 
 
-use model\utility\Db\Db;
+use model\settings\AppSettings;
+use model\utility\Db;
 
 final class User {
     private $username;
     private $email;
     private $password;
     private $time;
+    private $ip;
+
+    public static function getUserByLogin(string $username, string $password, string $ip): ?User {
+        $data = Db::instance()->single("SELECT * FROM user WHERE username LIKE ? AND password LIKE ?", array($username, $password));
+        if ($data)
+            return new User($data["username"], $data["password"], $data["email"], $ip);
+        return null;
+    }
+
+    public static function registerUser(string $username, string $password, string $email, string $ip) {
+        $usernameExists = boolval(Db::instance()->single("SELECT * FROM user WHERE username LIKE ?", array($username)));
+        $emailExists = boolval(Db::instance()->single("SELECT * FROM user WHERE email LIKE ?", array($email)));
+        $emailRegex = !boolval(preg_match(AppSettings::EMAIL_SYNTAX, $email));
+        $usernameRegex = boolval(preg_match(AppSettings::USERNAME_SYNTAX, $username));
+        $passwordAllowedRegex = boolval(preg_match(preg_quote(AppSettings::PASSWORD_ALLOWED_SYNTAX), $password));
+        var_dump(preg_match(AppSettings::PASSWORD_MUST_SYNTAX, $password));
+        $passwordMustRegex = !boolval(preg_match(AppSettings::PASSWORD_MUST_SYNTAX, $password));
+        if ($usernameExists || $usernameRegex || $emailExists || $emailRegex || $passwordAllowedRegex || $passwordMustRegex) return new RegisterFailure($usernameExists, $usernameRegex, $emailExists, $emailRegex, $passwordAllowedRegex, $passwordMustRegex);
+
+        $hashedPassword = self::hash($password);
+
+        var_dump($hashedPassword,"$2y$10\$aWSYw0sJCxeLmfY5EG18puupKYB90J9QQzA2qetwY8fu.kGB2r6my",hash_equals($hashedPassword,"$2y$10\$aWSYw0sJCxeLmfY5EG18puupKYB90J9QQzA2qetwY8fu.kGB2r6my"));
+
+        $creation = Db::instance()->add("user", array("username" => $username, "password" => $hashedPassword, "email" => $email));
+
+        if ($creation) return new User($username, $hashedPassword, $email, $ip);
+
+        return null;
+    }
+
+
+    private static function hash(string $string): string {
+        return password_hash($string, PASSWORD_BCRYPT);
+    }
 
     /**
      * User constructor.
-     * @param $username
-     * @param $email
-     * @param $password
+     * @param string $username
+     * @param string $password
+     * @param string $email
+     * @param string $ip
      */
-    public function __construct(string $username, string $password, string $email) {
+    private function __construct(string $username, string $password, string $email, string $ip) {
         $this->username = $username;
-        $this->email = $email;
         $this->password = $password;
+        $this->email = $email;
+        $this->ip = $ip;
         $this->time = time();
-    }
-
-    public function create(): bool {
-        if ($this->isUnique() != null) throw new \Exception("User not unique");
-        return boolval(Db::instance()->add("user",
-            array("username" => $this->username,
-                "email", $this->email,
-                "password" => $this->hash($this->password))));
-    }
-
-    public function isUnique():?UserNotUnique {
-        $username = boolval(Db::instance()->single("SELECT * FROM user WHERE username LIKE ?", array($this->username)));
-        $email = boolval(Db::instance()->single("SELECT * FROM user WHERE email LIKE ?", array($this->email)));
-        if ($username || $email) return new UserNotUnique($username, $email);
-        return null;
     }
 
     private function exists(): bool {
@@ -54,22 +76,30 @@ final class User {
         return Db::instance()->single("SELECT * FROM user WHERE email LIKE ? AND username LIKE ?", array($this->email, $this->username));
     }
 
-    private function hash(string $string): string {
-        return password_hash($string, PASSWORD_BCRYPT);
+    /* TODO */
+    private function checkTimeout(int $time): bool {
+        return time() < ($this->time + $time);
     }
 
-    private function checkTimeout(): bool {
-        return time() > $this->time;
-    }
-
-    public static function isUserOk(?User $user): bool {
+    public static function isUserOk(?User $user, string $ip, int $time): bool {
         if (!$user instanceof User) return false;
-        return $user->exists() && $user->arePasswordsSame() && $user->checkTimeout();
+        return $user->exists() && $user->arePasswordsSame() && $user->areIPsSame($ip) && $user->checkTimeout($time) && $user->refreshTime();
+    }
+
+    private function refreshTime(): bool {
+        return boolval($this->time = time());
+    }
+
+    private function areIPsSame(string $ip): bool {
+        return $ip == $this->ip;
     }
 
     public function getUsername(): string {
         return $this->username;
     }
 
+    private function setInfo(): void {
+        $data = $this->getInfo();
+    }
 
 }

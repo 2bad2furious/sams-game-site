@@ -34,6 +34,37 @@ abstract class FormNode {
         return $this->required;
     }
 
+    /**
+     * @return string
+     */
+    public function getName(): string {
+        return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValue(): string {
+        return $this->value;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPlaceholder(): string {
+        return $this->placeholder;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAdditionaltags(): string {
+        return $this->additionaltags;
+    }
+
+    /**
+     * @return string
+     */
     protected function getRequired(): string {
         return $this->required ? " required" : "";
     }

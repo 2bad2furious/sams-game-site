@@ -6,10 +6,11 @@
  * Time: 13:18
  */
 
-namespace model\utility\Db;
+namespace model\utility;
 
 use model\settings\DbSettings;
 use PDO;
+use PDOStatement;
 
 class Db extends PDO {
     private static $sharedInstance;
@@ -17,7 +18,7 @@ class Db extends PDO {
     public static function instance(): Db {
         if (!self::$sharedInstance)
             self::$sharedInstance = new Db(
-                "mysql:host=" . DbSettings::HOST . ";dbname=" . DbSettings::DATABASE . ";charset=" . DbSettings::CHARSET,
+                "mysql:host=" . DbSettings::HOST . ";dbname=" . DbSettings::DATABASE,
                 DbSettings::USERNAME,
                 DbSettings::PASSWORD,
                 DbSettings::OPTIONS
@@ -45,7 +46,7 @@ class Db extends PDO {
 
     public function add(string $table, array $data): int {
         return $this->createObject("INSERT INTO `" . $table . "` (" . implode(',', array_keys($data)) . ")
-            VALUES (" . str_repeat('?,', count($data) - 1) . ",?)", array_values($data))->rowCount();
+            VALUES (" . str_repeat('?,', count($data) - 1) . "?)", array_values($data))->rowCount();
     }
 
     public function update(string $table, array $data, string $where, array $params): int {
@@ -75,6 +76,8 @@ class Db extends PDO {
      * Returns the executed statement
      */
     public function createObject(string $query, array $parameters = array()): PDOStatement {
+        echo "<br>";
+        var_dump($query,$parameters);
         $PDOquery = $this->prepare($query);
         $PDOquery->execute($parameters);
         return $PDOquery;
