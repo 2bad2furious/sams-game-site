@@ -29,7 +29,7 @@ class LoginPresenter extends ApiPresenter {
         if ($form->hasData($this->server->get("REQUEST_METHOD"))) {
             $user = User::getUserByLogin($form->getUsername()->getValue(), $form->getPassword()->getValue(), $this->server->get("REMOTE_ADDR"));
             if ($user instanceof User) {
-                //$_SESSION["user"] = $user;
+                $_SESSION["user"] = $user;
                 $this->status = HeaderTypes::OK;
                 $this->view->setData($this->getJsonMessage($this->lang->getLoginSuccess()));
             } else {
