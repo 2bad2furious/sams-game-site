@@ -1,0 +1,2 @@
+login => ["message"=>string]
+register => ["message"=>["message"=>string]]
