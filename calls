@@ -1,2 +1,11 @@
 login => ["message"=>string]
 register => ["message"=>["message"=>string]]
+listmaps => ["listmaps"=>["title"=>string
+                        "author"=>string
+                        "rating"=>double
+                        "link"=>string]]
+map => ["title"=>string
+        "author"=>string
+        "rating"=>double
+        "link"=>string
+        "content"=>string   ]

@@ -89,14 +89,13 @@ abstract class Presenter {
      * @param array $post
      * @param array $get
      * @param array $files
-     * @param array $server
+     * @param array|StringArray $server
      * @param array $session
      * @param array $parameters
      * @param LanguageI $lang
-     * @throws Exception
      * @internal param App|string $app
      */
-    private final function __construct(array $post, array $get, array $files, StringArray $server, array $session, array $parameters, LanguageI $lang) {
+    protected final function __construct(array $post, array $get, array $files, StringArray $server, array $session, array $parameters, LanguageI $lang) {
 
         if (isset($session["user"])) {
             if (!$session["user"] instanceof User) {
@@ -104,7 +103,8 @@ abstract class Presenter {
             } else if (User::isUserOK($session["user"], $server->get("REMOTE_ADDR"), AppSettings::USER_LOGOUT_TIME)) {
                 $this->user = $session["user"];
             } else {
-                $this->loginTimeOut();
+                $this->loginTimeOut($session);
+                return;
             }
         }
 
@@ -121,7 +121,7 @@ abstract class Presenter {
 
     public function output(): string {
         $this->headers();
-        if (!$this->view || !$this->view instanceof ViewI) throw new Exception("view not set");
+        if (!$this->view || !$this->view instanceof ViewI) return "view not set tho";
         return $this->view->output();
     }
 
@@ -138,7 +138,8 @@ abstract class Presenter {
         $this->headers[] = $string;
     }
 
-    protected final function loginTimeOut() {
+    protected final function loginTimeOut(array $session) {
+        unset($session["user"]);
         $this->status = HeaderTypes::LOGIN_TIMEOUT;
         $this->logout();
     }

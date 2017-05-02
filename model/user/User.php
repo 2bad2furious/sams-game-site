@@ -75,6 +75,7 @@ final class User {
 
     /* TODO */
     private function checkTimeout(int $time): bool {
+        var_dump(time() - ($this->time + $time));
         return time() < ($this->time + $time);
     }
 
