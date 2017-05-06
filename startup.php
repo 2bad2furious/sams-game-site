@@ -16,7 +16,16 @@ $tokenIndex = AppSettings::DEFAULT_TOKEN_INDEX;
 $ss = new SessionSetter(@$_SERVER[$tokenIndex]);
 $id = $ss->getId();
 
+
 if ($id) session_id($id);
 
 session_start();
 
+function diedump(){
+    if ( func_num_args() > 0 ){
+        foreach(func_get_args() as $v){
+            var_dump($v);
+        }
+    }
+    exit();
+};

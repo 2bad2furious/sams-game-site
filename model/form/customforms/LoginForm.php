@@ -12,6 +12,10 @@ class LoginForm extends Form {
     protected $username;
     protected $password;
 
+    public function __construct(LanguageI $lang, array $data = array()) {
+        parent::__construct($lang, $lang->getLogin(), $lang->getLogin(), $data);
+    }
+
 
     /**
      * add fields and stuff

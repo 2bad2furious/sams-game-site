@@ -8,6 +8,7 @@ use model\language\AppLanguage;
 use model\language\LanguageI;
 use model\settings\App;
 use model\settings\AppSettings;
+use model\utility\StringUtility;
 use model\utility\UrlUtility;
 use view\View;
 
@@ -38,11 +39,12 @@ class Router {
             array_shift($url);
         }
 
-        $view = "\\view\\" . $app . "\\ErrorPresenter";
+        $view = "\\view\\" . $app . "\\ErrorView";
 
         if ((!isset($url[0]) || $url[0] === "") && $app == App::WEB) $view = "\\view\\" . $app . "\\HomeView";
         else
             for ($i = count($url) - 1; $i >= 0; $i--) {
+                $url[0] = ucfirst($url[0]);
                 $viewName = "view\\" . $app . "\\" . implode("\\", $url) . "View";
 
                 if ($this->viewExists($viewName)) {
@@ -55,8 +57,8 @@ class Router {
         $this->view = new $view($server, $session, $post, $get, $cookie, $files, $lang);
     }
 
-    private function viewExists(string $path): bool {
-
+    private function viewExists(string $path): string {
+        return file_exists(StringUtility::instance()->backSlashesToNormal($path.".php"))&& class_exists($path) ? $path : "";
     }
 
     public function getView(): View {
