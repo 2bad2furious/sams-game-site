@@ -5,7 +5,7 @@ namespace model\settings;
 class AppSettings {
     const DEFAULT_APP = App::WEB;
 
-    const FORBIDDEN_EXTENSIONS = array("php", "phtml", "gitignore", "htaccess");
+    const FORBIDDEN_EXTENSIONS = array("php", "phtml", "gitignore", "htaccess","sql");
 
     const DEFAULT_AFTER_TITLE = " GAME xd";
     const DEFAULT_FAVICON = "/favicon.ico";

@@ -4,43 +4,68 @@
 namespace view;
 
 
+use model\language\LanguageI;
 
+abstract class View {
+    protected $server = array();
+    protected $session = array();
+    protected $post = array();
+    protected $get = array();
+    protected $cookie = array();
+    protected $files = array();
 
-use model\utility\Syntax;
+    protected $lang;
 
-abstract class View implements ViewI {
-    protected function replaceTags(string $input,Syntax $syntax): string {
-        $str = $input;
+    protected $headers = array();
 
+    /**
+     * View constructor.
+     * @param array $server
+     * @param array $session
+     * @param array $post
+     * @param array $get
+     * @param array $cookie
+     * @param array $files
+     * @param $lang
+     */
+    public function __construct(array $server, array $session, array $post, array $get, array $cookie, array $files, LanguageI $lang) {
+        $this->server = $server;
+        $this->session = $session;
+        $this->post = $post;
+        $this->get = $get;
+        $this->cookie = $cookie;
+        $this->files = $files;
+        $this->lang = $lang;
 
-        $beglen = strlen($syntax->getSyntaxBeginning()) - 1;
+        $this->addHeader($this->getContentHeader());
 
-        $endlen = strlen($syntax->getSyntaxEnd()) - 1;
+        $this->main();
+    }
 
-        $regex = $syntax->getWhole();
+    public final function output(): string {
+        $this->headers();
+        return $this->getOutput();
+    }
 
-        $matches = null;
-        preg_match_all($regex, $str, $matches);
-        foreach ($matches[0] as $match) {
-            $var = substr($match, $beglen, strlen($match) - $beglen - $endlen);
-            $replacement = ((isset($this->$var) && is_string($this->$var)) ? $this->$var : "");
-            $str = str_replace($match, $replacement, $str);
+    protected function redirect(string $uri): void {
+        $this->addHeader("location:" . $uri);
+    }
+
+    protected function addHeader(string $header): void {
+        $this->headers[] = $header;
+    }
+
+    protected final function headers(): void {
+        foreach ($this->headers as $v) {
+            header($v);
         }
-
-        return $str;
     }
 
-    protected function runScript(string $path) {
-        ob_start(function () {});
-        require $path;
-        $str = ob_get_flush();
-        return $str;
-    }
+    abstract protected function main(): void;
 
-    public function output(): string {
-        return $this->replaceTags($this->preOutput(),Syntax::createDefault());
-    }
 
-    abstract protected function preOutput(): string;
+    abstract protected function getOutput(): string;
+
+    abstract protected function getContentHeader(): string;
 
 }

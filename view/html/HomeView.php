@@ -5,13 +5,16 @@ namespace view\html;
 
 
 
-use view\View;
-
-class HomeView extends View {
+class HomeView extends PageView {
 
     protected $kokotko;
 
-    protected function preOutput(): string {
-        return file_get_contents("templates\\home.phtml");
+    protected function prepreOutput(): string {
+        return "xd";
     }
+
+    protected function setContent(): void {
+        $this->content = "xddd";
+    }
+
 }

@@ -21,6 +21,8 @@ final class Header {
     private $loginPage;
     private $prefix;
 
+    private $headerPages = array();
+
     /**
      * Header constructor.
      * @param LanguageI $lang
@@ -39,7 +41,6 @@ final class Header {
         $this->registerPage= $pages["register"];
         $this->loginPage = $pages["login"];
         $this->profilePage = $pages["profile"];
-
     }
 
 
@@ -85,6 +86,10 @@ final class Header {
 
     public function getPrefix(): string {
         return $this->prefix;
+    }
+
+    public function getHeaderPages():array{
+        return $this->headePages;
     }
 
 }

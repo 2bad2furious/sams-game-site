@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS characters (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    value CHAR NOT NULL UNIQUE
+)
+COLLATE utf8_bin;
+INSERT INTO characters (`value`) VALUES ('a') , ('b') , ('c') , ('d') , ('e') , ('f') , ('g') , ('h') , ('i') , ('j') , ('k') , ('l') , ('m') , ('n') , ('o') , ('p') , ('q') , ('r') , ('s') , ('t') , ('u') , ('v') , ('w') , ('x') , ('y') , ('z') , ('A') , ('B') , ('C') , ('D') , ('E') , ('F') , ('G') , ('H') , ('I') , ('J') , ('K') , ('L') , ('M') , ('N') , ('O') , ('P') , ('Q') , ('R') , ('S') , ('T') , ('U') , ('V') , ('W') , ('X') , ('Y') , ('Z') , (' ');
