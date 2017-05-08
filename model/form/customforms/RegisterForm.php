@@ -14,6 +14,11 @@ class RegisterForm extends Form{
     protected $password2;
     protected $username;
     protected $email;
+
+    public function __construct(LanguageI $lang, array $data = array()) {
+        parent::__construct($lang, $lang->getRegister(), $lang->getRegister(), $data);
+    }
+
     /**
      * add fields and stuff
      * @param LanguageI $lang

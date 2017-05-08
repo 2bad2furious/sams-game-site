@@ -2,6 +2,7 @@
 
 use model\File;
 use model\Router;
+use model\user\User;
 use model\utility\Db;
 use presenter\Presenter;
 

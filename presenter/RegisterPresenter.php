@@ -1,39 +1,37 @@
 <?php
-
+/**
+ * Created by PhpStorm.
+ * User: martin
+ * Date: 8.5.17
+ * Time: 13:12
+ */
 
 namespace presenter;
 
 
-use model\form\customforms\LoginForm;
+use model\form\customforms\RegisterForm;
 use model\language\LanguageI;
 use model\user\User;
-use presenter\Presenter;
-use view\glob\LoginViewI;
+use view\glob\RegisterViewI;
 
-class LoginPresenter extends Presenter {
+class RegisterPresenter extends Presenter{
     private $session;
     private $post;
     private $view;
     private $lang;
-    /**
-     * @var
-     */
     private $request_method;
-    /**
-     * @var string
-     */
     private $remote_addr;
 
     /**
      * LoginPresenter constructor.
      * @param array $session
      * @param array $post
-     * @param LoginViewI $view
+     * @param RegisterViewI $view
      * @param LanguageI $lang
      * @param string $request_method
      * @param string $remote_addr
      */
-    public function __construct(array $session, array $post, LoginViewI $view, LanguageI $lang, string $request_method,string $remote_addr) {
+    public function __construct(array $session, array $post, RegisterViewI $view, LanguageI $lang, string $request_method,string $remote_addr) {
         $this->session = $session;
         $this->post = $post;
         $this->view = $view;
@@ -45,8 +43,9 @@ class LoginPresenter extends Presenter {
         $this->main();
     }
 
-    private function main(): void {
-        $form = new LoginForm($this->lang, $this->post);
+    private function main():void{
+        $form = new RegisterForm($this->lang,$this->post);
+        $this->view->setForm($form);
 
         $this->setUser($this->session);
 
@@ -59,19 +58,20 @@ class LoginPresenter extends Presenter {
         $hasData = $form->hasData($this->request_method);
 
         $this->view->hasData($hasData);
-        $this->view->setForm($form);
 
-        if ($hasData) {
+        if($hasData){
             $username = $form->getUsername()->getValue();
+            $email = $form->getEmail()->getValue();
             $password = $form->getPassword()->getValue();
+            $password2 = $form->getPassword2()->getValue();
 
-            $user = User::getUserByLogin($username,$password,$this->remote_addr);
 
-            if($user instanceof User) $_SESSION["user"] = $user;
+            $this->view->passwordsEqual($passwordsEqual = $password === $password2);
+            if(!$passwordsEqual) return;
 
-            $this->view->setUser($user);
+            $registerData = User::registerUser($username,$password,$email,$this->remote_addr);
+
+            $this->view->setRegisterData($registerData);
         }
     }
-
-
 }

@@ -14,10 +14,12 @@ abstract class Presenter
     {
         $user = null;
         if (isset($session["user"])) {
-            if (!$session["user"] instanceof User) throw new \Exception();
+            if (!$session["user"] instanceof User && $session["user"] != null) throw new \Exception();
 
-            $user = $this->validateUser($session["user"]);
+            $this->validateUser($session["user"]);
+            $user = $session["user"];
         }
+        $_SESSION["user"] = $user;
         $this->user = $user;
     }
 

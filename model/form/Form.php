@@ -78,7 +78,7 @@ abstract class Form {
             $purename = $v->getName();
 
             if (!isset($this->data[$v->getName()])) {
-                echo "xd".$v->getName()."\n";
+                echo $v->getName()." isnt set in post \n";
                 /* array inputs like fileuploads and stuff*/
                 $split = mb_substr($v->getName(), -2, 2);
                 if ($split === "[]") {

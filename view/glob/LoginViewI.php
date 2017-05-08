@@ -10,12 +10,13 @@
 namespace view\glob;
 
 use model\form\customforms\LoginForm;
+use model\user\User;
 
 interface LoginViewI {
 
     public function isLoggedIn(bool $loggedIn);
 
-    public function setLoginSuccess(bool $success);
+    public function setUser(?User $user);
 
     public function hasData(bool $hasData);
 

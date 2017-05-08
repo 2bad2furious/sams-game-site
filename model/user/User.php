@@ -28,6 +28,7 @@ final class User {
         $usernameRegex = boolval(preg_match(AppSettings::USERNAME_SYNTAX, $username));
         $passwordAllowedRegex = boolval(preg_match(preg_quote(AppSettings::PASSWORD_ALLOWED_SYNTAX), $password));
         $passwordMustRegex = !boolval(preg_match(AppSettings::PASSWORD_MUST_SYNTAX, $password));
+        
         if ($usernameExists || $usernameRegex || $emailExists || $emailRegex || $passwordAllowedRegex || $passwordMustRegex) return new RegisterFailure($usernameExists, $usernameRegex, $emailExists, $emailRegex, $passwordAllowedRegex, $passwordMustRegex);
 
         $hashedPassword = self::hash($password);
@@ -75,7 +76,6 @@ final class User {
 
     /* TODO */
     private function checkTimeout(int $time): bool {
-        var_dump(time() - ($this->time + $time));
         return time() < ($this->time + $time);
     }
 
