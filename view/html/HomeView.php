@@ -3,18 +3,11 @@
 
 namespace view\html;
 
-
+use view\PageView;
 
 class HomeView extends PageView {
 
-    protected $kokotko;
-
-    protected function prepreOutput(): string {
-        return "xd";
+    protected function getContent(): string {
+        return "content";
     }
-
-    protected function setContent(): void {
-        $this->content = "xddd";
-    }
-
 }

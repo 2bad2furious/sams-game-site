@@ -13,7 +13,7 @@ use model\utility\UrlUtility;
 use view\View;
 
 class Router {
-    public function __construct(array $server, array $session, array $post, array $get, array $files, array $cookie) {
+    public function __construct(array $server) {
         $url = explode("/", $server["REQUEST_URI"]);
         array_shift($url);
 
@@ -54,7 +54,7 @@ class Router {
                     array_shift($url);
                 }
             }
-        $this->view = new $view($server, $session, $post, $get, $cookie, $files, $lang);
+        $this->view = new $view($lang);
     }
 
     private function viewExists(string $path): string {

@@ -12,8 +12,7 @@ use presenter\RegisterPresenter;
 use view\ApiView;
 use view\glob\RegisterViewI;
 
-class RegisterView extends ApiView implements RegisterViewI
-{
+class RegisterView extends ApiView implements RegisterViewI {
     protected $registerData = null;
     protected $hasData = false;
     protected $isLoggedIn = false;
@@ -22,9 +21,8 @@ class RegisterView extends ApiView implements RegisterViewI
     protected $registerPresenter;
 
 
-    protected function main(): void
-    {
-        $this->registerPresenter = new RegisterPresenter($this->session, $this->post, $this, $this->lang, $this->server["REQUEST_METHOD"], $this->server["REMOTE_ADDR"]);
+    protected function main(): void {
+        $this->registerPresenter = new RegisterPresenter($this,$this->getLang());
 
         $this->status = HeaderTypes::BAD_REQUEST;
 
@@ -56,32 +54,27 @@ class RegisterView extends ApiView implements RegisterViewI
         }
 
         if ($message) $messageArr[] = $message;
-        $this->data = array("messages" => $messageArr);
+        $this->setData(array("messages" => $messageArr));
 
     }
 
-    public function setRegisterData($data)
-    {
+    public function setRegisterData($data) {
         $this->registerData = $data;
     }
 
-    public function setForm(RegisterForm $form)
-    {
+    public function setForm(RegisterForm $form) {
         // TODO: Implement setForm() method.
     }
 
-    public function isLoggedIn(bool $logged)
-    {
+    public function isLoggedIn(bool $logged) {
         $this->isLoggedIn = $logged;
     }
 
-    public function hasData(bool $data)
-    {
+    public function hasData(bool $data) {
         $this->hasData = $data;
     }
 
-    public function passwordsEqual(bool $equal)
-    {
+    public function passwordsEqual(bool $equal) {
         $this->passwordsEqual = $equal;
     }
 }

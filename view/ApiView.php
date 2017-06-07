@@ -7,10 +7,24 @@ namespace view;
 use model\settings\HeaderTypes;
 
 abstract class ApiView extends View {
-    protected $data = array();
+    private $data = array();
 
     protected function preOutput(): string {
         return json_encode($this->data);
+    }
+
+    /**
+     * @return array
+     */
+    public function getData(): array {
+        return $this->data;
+    }
+
+    /**
+     * @param array $data
+     */
+    public function setData(array $data) {
+        $this->data = $data;
     }
 
     protected final function getContentHeader(): string {

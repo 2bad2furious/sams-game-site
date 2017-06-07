@@ -3,33 +3,37 @@
 namespace presenter;
 
 
+use model\language\LanguageI;
 use model\settings\AppSettings;
 use model\user\User;
+use view\View;
 
-abstract class Presenter
-{
-    protected $user;
+abstract class Presenter {
+    private $view;
+    private $lang;
 
-    protected function setUser(array $session)
-    {
-        $user = null;
-        if (isset($session["user"])) {
-            if (!$session["user"] instanceof User && $session["user"] != null) throw new \Exception();
+    /**
+     * Presenter constructor.
+     * @param View $view
+     * @param LanguageI $lang
+     */
+    public final function __construct(View $view,LanguageI $lang) {
+        $this->view = $view;
+        $this->lang = $lang;
 
-            $this->validateUser($session["user"]);
-            $user = $session["user"];
-        }
-        $_SESSION["user"] = $user;
-        $this->user = $user;
+        $this->main();
     }
 
-    protected function isLogged():?User
-    {
-        return ($this->user instanceof User && $this->validateUser($this->user)) ? $this->user : null;
+    protected function getView(): View {
+        return $this->view;
     }
 
-    protected function validateUser(?User $user): bool
-    {
-        return User::isUserOk($user, "xd", AppSettings::USER_LOGOUT_TIME);
+    /**
+     * @return LanguageI
+     */
+    public function getLang(): LanguageI {
+        return $this->lang;
     }
+
+    protected abstract function main():void;
 }

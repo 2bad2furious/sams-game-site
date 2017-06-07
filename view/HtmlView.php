@@ -22,11 +22,12 @@ abstract class HtmlView extends View {
         $matches = null;
         preg_match_all($regex, $str, $matches);
         foreach ($matches[0] as $match) {
-            $var = substr($match, $beglen, strlen($match) - $beglen - $endlen);
-            $replacement = ((isset($this->$var) && is_string($this->$var)) ? $this->$var : "");
+            $methodname = "get" . ucfirst(substr($match, $beglen, strlen($match) - $beglen - $endlen));
+            $value = null;
+            $replacement = (method_exists($this, $methodname) && is_string($value = $this->{$methodname}())) ? $value : "";
             $str = str_replace($match, $replacement, $str);
+            //var_dump($str);
         }
-
         return $str;
     }
 
@@ -35,7 +36,7 @@ abstract class HtmlView extends View {
         });
         require $path;
         $str = ob_get_flush();
-        return $this->replaceTags($str,Syntax::createDefault());
+        return $this->replaceTags($str, Syntax::createDefault());
     }
 
     protected final function getContentHeader(): string {
@@ -43,6 +44,8 @@ abstract class HtmlView extends View {
     }
 
     public function getOutput(): string {
-        return $this->replaceTags($this->getContent(),Syntax::createDefault());
+        return $this->replaceTags($this->getHtmlContent(), Syntax::createDefault());
     }
+
+    protected abstract function getHtmlContent(): string;
 }

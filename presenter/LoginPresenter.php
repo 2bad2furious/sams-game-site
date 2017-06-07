@@ -5,71 +5,38 @@ namespace presenter;
 
 
 use model\form\customforms\LoginForm;
+use model\Globals;
 use model\language\LanguageI;
+use model\settings\AppSettings;
 use model\user\User;
 use presenter\Presenter;
 use view\glob\LoginViewI;
 
 class LoginPresenter extends Presenter {
-    private $session;
-    private $post;
-    private $view;
-    private $lang;
-    /**
-     * @var
-     */
-    private $request_method;
-    /**
-     * @var string
-     */
-    private $remote_addr;
 
-    /**
-     * LoginPresenter constructor.
-     * @param array $session
-     * @param array $post
-     * @param LoginViewI $view
-     * @param LanguageI $lang
-     * @param string $request_method
-     * @param string $remote_addr
-     */
-    public function __construct(array $session, array $post, LoginViewI $view, LanguageI $lang, string $request_method,string $remote_addr) {
-        $this->session = $session;
-        $this->post = $post;
-        $this->view = $view;
-        $this->lang = $lang;
+    protected function main(): void {
+        $form = new LoginForm($this->getLang(), Globals::getPost());
 
-        $this->request_method = $request_method;
-        $this->remote_addr = $remote_addr;
+        $server = Globals::getServer();
 
-        $this->main();
-    }
+        $this->getView()->isLoggedIn($isLoggedIn = User::isLoggedIn(Globals::getSession(), $ip = $server["REMOTE_ADDR"], AppSettings::USER_LOGOUT_TIME));
 
-    private function main(): void {
-        $form = new LoginForm($this->lang, $this->post);
-
-        $this->setUser($this->session);
-
-        $this->view->isLoggedIn(boolval($this->isLogged()));
-
-        if ($this->isLogged()) {
+        if ($isLoggedIn) {
             return;
         }
 
-        $hasData = $form->hasData($this->request_method);
+        $hasData = $form->hasData($server["REQUEST_METHOD"]);
 
-        $this->view->hasData($hasData);
-        $this->view->setForm($form);
+        $this->getView()->hasData($hasData);
+        $this->getView()->setForm($form);
 
         if ($hasData) {
             $username = $form->getUsername()->getValue();
             $password = $form->getPassword()->getValue();
 
-            $user = User::getUserByLogin($username,$password,$this->remote_addr);
+            $user = User::loginUser($username, $password,$ip);
 
-            if($user instanceof User) $_SESSION["user"] = $user;
-
-            $this->view->setUser($user);
+            $this->getView()->setUser($user);
         }
     }
 

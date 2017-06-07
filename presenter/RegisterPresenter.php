@@ -10,68 +10,41 @@ namespace presenter;
 
 
 use model\form\customforms\RegisterForm;
+use model\Globals;
 use model\language\LanguageI;
+use model\settings\AppSettings;
 use model\user\User;
 use view\glob\RegisterViewI;
 
-class RegisterPresenter extends Presenter{
-    private $session;
-    private $post;
-    private $view;
-    private $lang;
-    private $request_method;
-    private $remote_addr;
+class RegisterPresenter extends Presenter {
 
-    /**
-     * LoginPresenter constructor.
-     * @param array $session
-     * @param array $post
-     * @param RegisterViewI $view
-     * @param LanguageI $lang
-     * @param string $request_method
-     * @param string $remote_addr
-     */
-    public function __construct(array $session, array $post, RegisterViewI $view, LanguageI $lang, string $request_method,string $remote_addr) {
-        $this->session = $session;
-        $this->post = $post;
-        $this->view = $view;
-        $this->lang = $lang;
+    protected function main(): void {
+        $form = new RegisterForm($this->getLang(), Globals::getPost());
+        $this->getView()->setForm($form);
 
-        $this->request_method = $request_method;
-        $this->remote_addr = $remote_addr;
+        $server = Globals::getServer();
 
-        $this->main();
-    }
+        $this->getView()->isLoggedIn($isLoggedIn = User::isLoggedIn(Globals::getSession(), $server["REMOTE_ADDR"], AppSettings::USER_LOGOUT_TIME));
 
-    private function main():void{
-        $form = new RegisterForm($this->lang,$this->post);
-        $this->view->setForm($form);
-
-        $this->setUser($this->session);
-
-        $this->view->isLoggedIn(boolval($this->isLogged()));
-
-        if ($this->isLogged()) {
+        if (!$isLoggedIn) {
             return;
         }
 
-        $hasData = $form->hasData($this->request_method);
+        $this->getView()->hasData($hasData = $form->hasData($server["REQUEST_METHOD"]));
 
-        $this->view->hasData($hasData);
-
-        if($hasData){
+        if ($hasData) {
             $username = $form->getUsername()->getValue();
             $email = $form->getEmail()->getValue();
             $password = $form->getPassword()->getValue();
             $password2 = $form->getPassword2()->getValue();
 
 
-            $this->view->passwordsEqual($passwordsEqual = $password === $password2);
-            if(!$passwordsEqual) return;
+            $this->getView()->passwordsEqual($passwordsEqual = $password === $password2);
+            if (!$passwordsEqual) return;
 
-            $registerData = User::registerUser($username,$password,$email,$this->remote_addr);
+            $registerData = User::registerUser($username, $password, $email, Globals::getServer()["REMOTE_ADDR"]);
 
-            $this->view->setRegisterData($registerData);
+            $this->getView()->setRegisterData($registerData);
         }
     }
 }

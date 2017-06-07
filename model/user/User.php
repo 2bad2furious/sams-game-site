@@ -8,16 +8,22 @@ use model\settings\AppSettings;
 use model\utility\Db;
 
 final class User {
+    private static $extractedUser;
+
     private $username;
     private $email;
     private $password;
     private $time;
     private $ip;
 
-    public static function getUserByLogin(string $username, string $password, string $ip): ?User {
+    public static function loginUser(string $username, string $password, string $ip): ?User {
         $data = Db::instance()->single("SELECT * FROM user WHERE username LIKE ?", array($username));
         if ($data)
-            return password_verify($password, $data["password"]) ? new User($data["username"], $data["password"], $data["email"], $ip) : null;
+            if (password_verify($password, $data["password"])) {
+                $user = new User($data["username"], $data["password"], $data["email"], $ip);
+                $_SESSION["user"] = $user;
+                return $user;
+            }
         return null;
     }
 
@@ -28,7 +34,7 @@ final class User {
         $usernameRegex = boolval(preg_match(AppSettings::USERNAME_SYNTAX, $username));
         $passwordAllowedRegex = boolval(preg_match(preg_quote(AppSettings::PASSWORD_ALLOWED_SYNTAX), $password));
         $passwordMustRegex = !boolval(preg_match(AppSettings::PASSWORD_MUST_SYNTAX, $password));
-        
+
         if ($usernameExists || $usernameRegex || $emailExists || $emailRegex || $passwordAllowedRegex || $passwordMustRegex) return new RegisterFailure($usernameExists, $usernameRegex, $emailExists, $emailRegex, $passwordAllowedRegex, $passwordMustRegex);
 
         $hashedPassword = self::hash($password);
@@ -79,6 +85,7 @@ final class User {
         return time() < ($this->time + $time);
     }
 
+    //todo pass a db wrapper to it
     public static function isUserOk(?User $user, string $ip, int $time): bool {
         if (!$user instanceof User) return false;
         return $user->exists() && $user->arePasswordsSame() && $user->areIPsSame($ip) && $user->checkTimeout($time) && $user->refreshTime();
@@ -90,6 +97,28 @@ final class User {
 
     private function areIPsSame(string $ip): bool {
         return $ip == $this->ip;
+    }
+
+    public static function isLoggedIn(array $session, string $ip, int $time): bool {
+        return self::extractUser($session, $ip, $time) instanceof User;
+    }
+
+    public static function extractUser(array $session, string $ip, int $time):?User {
+        if (!self::$extractedUser instanceof User) {
+            $user = @$session["user"];
+            if ($user == null || !$user instanceof User) {
+                $user = null;
+                self::unsetInSession();
+            } else {
+                if (User::isUserOk($user, $ip, $time)) ;
+            }
+            self::$extractedUser = $user;
+        }
+        return self::$extractedUser;
+    }
+
+    private static function unsetInSession(): void {
+        unset($_SERVER["user"]);
     }
 
     public function getUsername(): string {

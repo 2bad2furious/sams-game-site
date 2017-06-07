@@ -19,23 +19,23 @@ class LoginView extends ApiView implements LoginViewI
 
     protected function main(): void
     {
-        $this->loginPresenter = new LoginPresenter($this->session, $this->post, $this, $this->lang, $this->server["REQUEST_METHOD"], $this->server["REMOTE_ADDR"]);
+        $this->loginPresenter = new LoginPresenter($this, $this->getLang());
 
         $header = HeaderTypes::BAD_REQUEST;
 
         if (!$this->hasData) {
-            $message = $this->lang->getFormNoData();
+            $message = $this->getLang()->getFormNoData();
         } else if ($this->isLoggedIn) {
-            $message = $this->lang->getUserAlreadyLoggedIn();
+            $message = $this->getLang()->getUserAlreadyLoggedIn();
         } else if (!$this->user instanceof User) {
-            $message = $this->lang->getLoginFailure();
+            $message = $this->getLang()->getLoginFailure();
         } else {
-            $message = $this->lang->getLoginSuccess();
+            $message = $this->getLang()->getLoginSuccess();
             $header = HeaderTypes::OK;
         }
 
         $this->status = $header;
-        $this->data = array("message" => $message);
+        $this->setData(array("message" => $message));
     }
 
     public function isLoggedIn(bool $loggedIn)

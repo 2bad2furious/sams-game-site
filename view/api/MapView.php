@@ -4,15 +4,12 @@
 namespace view\api;
 
 
-use view\View;
+use view\ApiView;
+use view\glob\MapViewI;
 
-class MapView extends View {
-
-    protected function preOutput(): string {
-        // TODO: Implement preOutput() method.
-    }
+class MapView extends ApiView implements MapViewI {
 
     protected function main(): void {
-        // TODO: Implement main() method.
+
     }
 }

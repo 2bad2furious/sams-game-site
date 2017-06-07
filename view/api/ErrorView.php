@@ -9,6 +9,12 @@
 namespace view\api;
 
 
-class ErrorView {
+use view\ApiView;
+use view\glob\ErrorViewI;
 
+class ErrorView extends ApiView implements ErrorViewI {
+
+    protected function main(): void {
+
+    }
 }
