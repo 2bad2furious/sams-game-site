@@ -19,18 +19,16 @@ use view\glob\RegisterViewI;
 class RegisterPresenter extends Presenter {
 
     protected function main(): void {
-        $form = new RegisterForm($this->getLang(), Globals::getPost());
+        $form = new RegisterForm($this->getLang(), $_POST);
         $this->getView()->setForm($form);
 
-        $server = Globals::getServer();
+        $this->getView()->isLoggedIn($isLoggedIn = User::isLoggedIn());
 
-        $this->getView()->isLoggedIn($isLoggedIn = User::isLoggedIn(Globals::getSession(), $server["REMOTE_ADDR"], AppSettings::USER_LOGOUT_TIME));
-
-        if (!$isLoggedIn) {
+        if ($isLoggedIn) {
             return;
         }
 
-        $this->getView()->hasData($hasData = $form->hasData($server["REQUEST_METHOD"]));
+        $this->getView()->hasData($hasData = $form->hasData());
 
         if ($hasData) {
             $username = $form->getUsername()->getValue();
@@ -42,7 +40,7 @@ class RegisterPresenter extends Presenter {
             $this->getView()->passwordsEqual($passwordsEqual = $password === $password2);
             if (!$passwordsEqual) return;
 
-            $registerData = User::registerUser($username, $password, $email, Globals::getServer()["REMOTE_ADDR"]);
+            $registerData = User::registerUser($username, $password, $email, $_SERVER["REMOTE_ADDR"]);
 
             $this->getView()->setRegisterData($registerData);
         }

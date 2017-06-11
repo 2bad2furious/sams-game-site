@@ -9,7 +9,7 @@ use model\settings\HeaderTypes;
 abstract class ApiView extends View {
     private $data = array();
 
-    protected function preOutput(): string {
+    protected function getOutput(): string {
         return json_encode($this->data);
     }
 

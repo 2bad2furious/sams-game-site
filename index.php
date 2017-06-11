@@ -5,7 +5,6 @@ use model\Router;
 use model\user\User;
 use model\utility\Db;
 use presenter\Presenter;
-
 require "startup.php";
 
 
@@ -22,7 +21,6 @@ try {
     echo $router->getView()->output();
 } catch (Throwable $ex) {
     //throw $ex->getPrevious();
-    var_dump($ex->getPrevious() instanceof PDOException);
     if ($ex->getPrevious() instanceof PDOException)
         throw $ex->getPrevious();
     throw $ex;

@@ -10,7 +10,7 @@ use view\HtmlView;
 class FooterView extends HtmlView implements FooterViewI {
 
     protected function getHtmlContent(): string {
-        return "footer rawr";
+        return $this->runScript("templates/footer.phtml");
     }
 
     protected function main(): void {

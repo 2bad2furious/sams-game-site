@@ -14,7 +14,7 @@ use model\user\User;
 
 interface LoginViewI {
 
-    public function isLoggedIn(bool $loggedIn);
+    public function setLoggedIn(bool $loggedIn);
 
     public function setUser(?User $user);
 

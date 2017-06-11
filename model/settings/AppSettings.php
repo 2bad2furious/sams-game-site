@@ -20,7 +20,7 @@ class AppSettings {
     const USER_LOGOUT_TIME = 1200;
 
     const PASSWORD_ALLOWED_SYNTAX = "#([^A-Za-z0-9\$_-&@/ß//])#";
-    const PASSWORD_MUST_SYNTAX = "#(.*)#"; //TODO
+    const PASSWORD_MUST_SYNTAX = "#(.){6,}#"; //TODO
     const EMAIL_SYNTAX = "#[@]#";
     const USERNAME_SYNTAX = "#[^0-9a-zA-Z_]#";
 

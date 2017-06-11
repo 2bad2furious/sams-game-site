@@ -15,17 +15,15 @@ use view\glob\LoginViewI;
 class LoginPresenter extends Presenter {
 
     protected function main(): void {
-        $form = new LoginForm($this->getLang(), Globals::getPost());
+        $form = new LoginForm($this->getLang(), $_POST);
 
-        $server = Globals::getServer();
-
-        $this->getView()->isLoggedIn($isLoggedIn = User::isLoggedIn(Globals::getSession(), $ip = $server["REMOTE_ADDR"], AppSettings::USER_LOGOUT_TIME));
+        $this->getView()->setLoggedIn($isLoggedIn = User::isLoggedIn());
 
         if ($isLoggedIn) {
             return;
         }
 
-        $hasData = $form->hasData($server["REQUEST_METHOD"]);
+        $hasData = $form->hasData();
 
         $this->getView()->hasData($hasData);
         $this->getView()->setForm($form);
@@ -34,7 +32,7 @@ class LoginPresenter extends Presenter {
             $username = $form->getUsername()->getValue();
             $password = $form->getPassword()->getValue();
 
-            $user = User::loginUser($username, $password,$ip);
+            $user = User::loginUser($username, $password);
 
             $this->getView()->setUser($user);
         }

@@ -44,5 +44,6 @@ class EnLanguage extends LanguageA {
         $this->adminFailure = "An error occured. You can contact us or try again later";
         $this->loginFailure = "Wrong username or password";
         $this->formNoData = "We didn't get any data from you";
+        $this->logoutSuccess = "Successfully logged out";
     }
 }

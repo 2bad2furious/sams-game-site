@@ -1,12 +1,16 @@
 <header>
     <div id="top_container">
         <span id="loggedInfo">
-            <?php if ($this->logged): ?>
-                !{usernameText}:<a href="/!{profileUrl}">!{username}</a>
-            <?php else: ?>!{username}<?php endif; ?>
+            <?php if ($this->isLogged()): ?>
+                !{usernameText}:<a href="!{profileUrl}">!{username}</a>
+            <?php else: ?>!{userNotLoggedIn}<?php endif; ?>
         </span>
         <span id="loginRegisterLogout">
-            <a href="/!{loginUrl}">!{loginText}</a>&nbsp;<a href="/!{registerUrl}">!{registerText}</a>
+        <?php if (!$this->isLogged()): ?>
+            <a href="!{loginUrl}">!{loginText}</a>&nbsp;<a href="!{registerUrl}">!{registerText}</a>
+            <?php else: ?>
+            <a href="!{logoutUrl}">!{logoutText}</a>
+        <?php endif; ?>
         </span>
     </div>
     <nav>

@@ -59,11 +59,11 @@ abstract class Form {
      * @param string $server_request_method
      * @return array|bool
      */
-    public function hasData(string $server_request_method): bool {
+    public function hasData(): bool {
 
 //        var_dump($server_request_method,strtoupper($this->method));
 
-        if ($server_request_method != strtoupper($this->method)) return false;
+        if ($_SERVER["REQUEST_METHOD"] != strtoupper($this->method)) return false;
 
         return $this->validate();
     }

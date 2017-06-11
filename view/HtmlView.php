@@ -19,9 +19,7 @@ abstract class HtmlView extends View {
 
         $regex = $syntax->getWhole();
 
-        $matches = null;
-        preg_match_all($regex, $str, $matches);
-        foreach ($matches[0] as $match) {
+        foreach ($this->getMatches($regex, $str) as $match) {
             $methodname = "get" . ucfirst(substr($match, $beglen, strlen($match) - $beglen - $endlen));
             $value = null;
             $replacement = (method_exists($this, $methodname) && is_string($value = $this->{$methodname}())) ? $value : "";
@@ -31,11 +29,26 @@ abstract class HtmlView extends View {
         return $str;
     }
 
-    protected function runScript(string $path) {
+    private function getMatches(string $regex, string $str): array {
+        $matches = array();
+        preg_match_all($regex, $str, $matches);
+        return $matches[0];
+    }
+
+    //TODO delete when done
+    protected function runScript(string $path):string {
+        $str = "";
+        if(!file_exists($path)) throw new \Exception("File does not exist");
         ob_start(function () {
         });
-        require $path;
-        $str = ob_get_flush();
+        try {
+            require $path;
+            $str = ob_get_clean();
+        } catch (\Throwable $ex) {
+            ob_end_clean();
+            throw $ex;
+        }
+
         return $this->replaceTags($str, Syntax::createDefault());
     }
 

@@ -10,15 +10,13 @@ use model\form\customforms\LoginForm;
 use view\ApiView;
 use view\glob\LoginViewI;
 
-class LoginView extends ApiView implements LoginViewI
-{
+class LoginView extends ApiView implements LoginViewI {
     protected $loginPresenter;
     protected $hasData = false;
     protected $isLoggedIn = false;
     protected $user = null;
 
-    protected function main(): void
-    {
+    protected function main(): void {
         $this->loginPresenter = new LoginPresenter($this, $this->getLang());
 
         $header = HeaderTypes::BAD_REQUEST;
@@ -38,23 +36,19 @@ class LoginView extends ApiView implements LoginViewI
         $this->setData(array("message" => $message));
     }
 
-    public function isLoggedIn(bool $loggedIn)
-    {
+    public function setLoggedIn(bool $loggedIn) {
         $this->isLoggedIn = $loggedIn;
     }
 
-    public function hasData(bool $hasData)
-    {
+    public function hasData(bool $hasData) {
         $this->hasData = $hasData;
     }
 
-    public function setForm(LoginForm $form)
-    {
+    public function setForm(LoginForm $form) {
 
     }
 
-    public function setUser(?User $user)
-    {
+    public function setUser(?User $user) {
         $this->user = $user;
     }
 }

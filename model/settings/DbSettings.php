@@ -8,9 +8,9 @@ use PDO;
 
 class DbSettings {
     const DATABASE = "sams-game";
-    const USERNAME = "remote-user";
-    const PASSWORD = "7iPiQdukdfS1jdMK";
-    const HOST = "192.168.1.54:3306";
+    const USERNAME = "root";
+    const PASSWORD = "";
+    const HOST = "localhost";
     //const DATABASE = "vampp";
     //const USERNAME = "root";
     //const PASSWORD = "";

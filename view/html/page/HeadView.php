@@ -10,10 +10,10 @@ use view\HtmlView;
 class HeadView extends HtmlView implements HeadViewI {
 
     protected function getHtmlContent(): string {
-        return "head xd";
+        return $this->runScript("templates/head.phtml");
     }
 
     protected function main(): void {
-        // TODO: Implement main() method.
+
     }
 }

@@ -16,16 +16,17 @@ final class User {
     private $time;
     private $ip;
 
-    public static function loginUser(string $username, string $password, string $ip): ?User {
+    public static function loginUser(string $username, string $password): ?User {
         $data = Db::instance()->single("SELECT * FROM user WHERE username LIKE ?", array($username));
         if ($data)
             if (password_verify($password, $data["password"])) {
-                $user = new User($data["username"], $data["password"], $data["email"], $ip);
+                $user = new User($data["username"], $data["password"], $data["email"],$_SERVER["REMOTE_ADDR"]);
                 $_SESSION["user"] = $user;
                 return $user;
             }
         return null;
     }
+
 
     public static function registerUser(string $username, string $password, string $email, string $ip) {
         $usernameExists = boolval(Db::instance()->single("SELECT * FROM user WHERE username LIKE ?", array($username)));
@@ -38,9 +39,7 @@ final class User {
         if ($usernameExists || $usernameRegex || $emailExists || $emailRegex || $passwordAllowedRegex || $passwordMustRegex) return new RegisterFailure($usernameExists, $usernameRegex, $emailExists, $emailRegex, $passwordAllowedRegex, $passwordMustRegex);
 
         $hashedPassword = self::hash($password);
-
         $creation = Db::instance()->add("user", array("username" => $username, "password" => $hashedPassword, "email" => $email));
-
         if ($creation) return new User($username, $hashedPassword, $email, $ip);
 
         return null;
@@ -86,9 +85,9 @@ final class User {
     }
 
     //todo pass a db wrapper to it
-    public static function isUserOk(?User $user, string $ip, int $time): bool {
+    public static function isUserOk(?User $user): bool {
         if (!$user instanceof User) return false;
-        return $user->exists() && $user->arePasswordsSame() && $user->areIPsSame($ip) && $user->checkTimeout($time) && $user->refreshTime();
+        return $user->exists() && $user->arePasswordsSame() && $user->areIPsSame($_SERVER["REMOTE_ADDR"]) && $user->checkTimeout(AppSettings::USER_LOGOUT_TIME) && $user->refreshTime();
     }
 
     private function refreshTime(): bool {
@@ -99,26 +98,29 @@ final class User {
         return $ip == $this->ip;
     }
 
-    public static function isLoggedIn(array $session, string $ip, int $time): bool {
-        return self::extractUser($session, $ip, $time) instanceof User;
+    public static function isLoggedIn(): bool {
+        return self::extractUser() instanceof User;
     }
 
-    public static function extractUser(array $session, string $ip, int $time):?User {
+    public static function extractUser():?User {
         if (!self::$extractedUser instanceof User) {
-            $user = @$session["user"];
+            $user = @$_SESSION["user"];
             if ($user == null || !$user instanceof User) {
                 $user = null;
-                self::unsetInSession();
+                self::logout();
             } else {
-                if (User::isUserOk($user, $ip, $time)) ;
+                if (!User::isUserOk($user)) {
+                    self::logout();
+                    $user = null;
+                }
             }
             self::$extractedUser = $user;
         }
         return self::$extractedUser;
     }
 
-    private static function unsetInSession(): void {
-        unset($_SERVER["user"]);
+    public static function logout() {
+        unset($_SESSION["user"]);
     }
 
     public function getUsername(): string {

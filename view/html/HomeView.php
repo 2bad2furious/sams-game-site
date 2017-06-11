@@ -8,6 +8,6 @@ use view\PageView;
 class HomeView extends PageView {
 
     protected function getContent(): string {
-        return "content";
+        return $this->runScript("templates/home.phtml");
     }
 }

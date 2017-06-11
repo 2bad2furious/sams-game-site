@@ -70,7 +70,12 @@ abstract class PageView extends HtmlView {
     }
 
     protected final function getHtmlContent(): string {
+        $this->content = $this->getContent();
         return $this->runScript($this->getPageScriptPath());
+    }
+
+    protected final function getInnerContent():string{
+        return $this->content;
     }
 
     protected function getPageScriptPath(): string {

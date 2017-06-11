@@ -32,6 +32,7 @@ final class CsLanguage extends LanguageA {
         $this->adminFailure = "Někde nastala chyba. Můžete nás kontaktovat, případně to zkusit později";
         $this->loginFailure = "Špatné uživatelské jméno nebo heslo";
         $this->formNoData = "Nemáme od Vás žádná data";
+        $this->logoutSuccess = "Úspěšně odhlášen";
     }
 
 
