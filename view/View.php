@@ -9,15 +9,17 @@ use model\Message;
 
 abstract class View implements ViewI {
     private $lang;
+    private $parameters;
 
     private $headers = array();
     protected $status = "";
 
-    public final function __construct(LanguageI $lang) {
+    public final function __construct(LanguageI $lang, array $parameters) {
         if (!isset($_SESSION["messages"]) || !is_array($_SESSION["messages"]))
             $this->resetMessages();
 
         $this->lang = $lang;
+        $this->parameters = $parameters;
         $this->addHeader($this->getContentHeader());
         $this->main();
     }
@@ -32,6 +34,13 @@ abstract class View implements ViewI {
      */
     public final function getLang(): LanguageI {
         return $this->lang;
+    }
+
+    /**
+     * @return array
+     */
+    public function getParameters(): array {
+        return $this->parameters;
     }
 
     protected final function redirect(string $uri): void {
