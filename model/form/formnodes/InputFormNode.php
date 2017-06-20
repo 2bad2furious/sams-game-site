@@ -20,6 +20,6 @@ class InputFormNode extends FormNode {
      * @return string
      */
     public function returnHtml(): string {
-        return "<input type='{$this->type}' name='{$this->name}' placeholder='{$this->placeholder}' value='{$this->value}'" . $this->getRequired() . ">";
+        return "<input type='{$this->type}' name='{$this->name}' placeholder='{$this->placeholder}' value='{$this->value}' {$this->getRequired()} {$this->getAdditionaltags()}>";
     }
 }
