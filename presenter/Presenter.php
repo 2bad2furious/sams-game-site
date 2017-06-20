@@ -13,6 +13,7 @@ abstract class Presenter {
     private $view;
     private $lang;
     private $extractedUser;
+    private $parameters;
 
     /**
      * Presenter constructor.
