@@ -59,4 +59,8 @@ interface LanguageI {
     public static function instance(): LanguageI;
 
     public function getLogoutSuccess(): string;
+
+    public function getCreateMap(): string;
+
+    public function getSave(): string;
 }
